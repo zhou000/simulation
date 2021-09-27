@@ -10,6 +10,7 @@ import sim_fixed_env as env
 # VIDEO_BIT_RATE = [300,750,1200,1850,2850,4300]  # Kbps
 VIDEO_BIT_RATE = [344, 742, 1064, 2437, 4583, 6636]  # Kbps ************* VBR video bit_rate
 BUFFER_NORM_FACTOR = 10.0
+CHUNK_TIL_VIDEO_END_CAP = 48.0
 M_IN_K = 1000.0
 # REBUF_PENALTY = 2.66  # 1 sec rebuffering -> 3 Mbps     logreward
 REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
@@ -18,8 +19,7 @@ SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 1  # default video quality without agent
 RANDOM_SEED = 42
 RAND_RANGE = 1000
-BITS_IN_BYTE = 8.0
-# LOG_FILE = '../test_results/log_sim_LinUCB0'
+# LOG_FILE = '../test_results/log_sim_LinUCB5'
 # TEST_LOG_FOLDER = '../test_results/'
 # TEST_TRACES = '../longer_traces/'
 # TEST_TRACES = './simulation_traces/'
@@ -29,7 +29,7 @@ BITRATE_LEVELS = 6
 VMAF_SMOOTH_PENALTY = 1
 VMAF_REBUF_PENALTY = 10000
 
-
+CARE_COUNT = 1
 
 VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 TEST_TRACES = sys.argv[1]
@@ -37,9 +37,9 @@ LOG_FILE = sys.argv[2]
 alpha = float(sys.argv[3])
 VMAF_REBUF_PENALTY_1 = sys.argv[4]
 
-# # debug:
+# debug:
 # VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
-# LOG_FILE = '../test_results/log_ctx9_LinUCB0'
+# LOG_FILE = '../test_results/log_care1_LinUCB0'
 # TEST_TRACES = '../long_traces/'
 # alpha = 5
 # VMAF_REBUF_PENALTY_1 = 100
@@ -47,10 +47,14 @@ VMAF_REBUF_PENALTY_1 = sys.argv[4]
 # S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_INFO = 5  # throughput, bit_rate, buffer_size, chunk_size, penalty_sm
 # S_INFO = 5  # throughput*5, bit_rate, buffer_size, chunk_size, penalty_sm, sr_time, target_buf
-X_INFO = 9  # throughput*5, bit_rate, buffer_size, chunk_size, penalty_sm
+# X_INFO = 9  # throughput*5, bit_rate, buffer_size, chunk_size, penalty_sm
+X_INFO = 3  # video quality, penalty_sm, prediction_penalty_rb
 X_D = X_INFO
-X_LEN = 9
-Y_LEN = 9  # take how many rewards in the past
+# X_LEN = 3
+# X_LEN = X_INFO
+X_LEN = 8
+# Y_LEN = 3  # take how many rewards in the past
+Y_LEN = 8  # take how many rewards in the past
 S_LEN = 8  # take how many frames in the past
 A_DIM = 6
 
@@ -84,12 +88,12 @@ def main():
     # print ("log_file: ", log_file)
     # print ('all_file_names: ', all_file_names)
 
-    # print ('alpha: ', type(alpha))
-
     Aa = np.zeros((A_DIM, X_D, X_D))
     Aa_inv = np.zeros((A_DIM, X_D, X_D))
     ba = np.zeros((A_DIM, X_D, 1))
     theta = np.zeros((A_DIM, X_D, 1))
+    if_empty = np.zeros(A_DIM)
+    buffer_level = [0, 2, 4, 6, 8, 10]
 
     for i in range(A_DIM):
         Aa[i] = np.identity(X_D)
@@ -139,10 +143,6 @@ def main():
         #
         # penalty_sm = SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
         #                                      VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
-        # # penalty_sm = SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
-        # #                                      VIDEO_BIT_RATE[last_bit_rate])
-        # #
-        # # penalty_sm = penalty_sm / float(np.max(VIDEO_BIT_RATE))     # normalized
 
         # # -- log scale reward --
         # log_bit_rate = np.log(VIDEO_BIT_RATE[bit_rate] / float(VIDEO_BIT_RATE[0]))
@@ -180,26 +180,21 @@ def main():
         # reward = reward / M_IN_K    # normalize
 
 
+
         r_batch.append(reward)
 
         last_quality = last_bit_rate
         last_bit_rate = bit_rate
 
         # log time_stamp, bit_rate, buffer_size, reward
-        # log_file.write(str(time_stamp / M_IN_K) + '\t' +
         log_file.write(str(video_chunk_num) + '\t' +
-                       # str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
                        str(video_quality) + '\t' +
                        str(buffer_size) + '\t' +
                        str(rebuf) + '\t' +
                        str(video_chunk_size) + '\t' +
                        str(delay) + '\t' +
-                       # str(last_quality) + '\t' +
-                       # str(buffer_remain_ratio) + '\t' +
-                       # str(rush_flag) + '\t' +
                        str(reward) + '\n')
         log_file.flush()
-
 
         # retrieve previous state
         if len(s_batch) == 0:
@@ -222,35 +217,31 @@ def main():
         x_context = np.roll(x_context, -1, axis=1)
         y_reward = np.roll(y_reward, -1)
 
-        # state[0, -1] = VIDEO_BIT_RATE[bit_rate] / float(np.max(VIDEO_BIT_RATE))    # normalized to 0-1
-        # state[0, -1] = VIDEO_BIT_RATE[bit_rate] / M_IN_K  # /1000   last quality
-        # state[0, -1] = video_quality / M_IN_K  # /1000
         state[0, -1] = video_quality / 100
         state[1, -1] = buffer_size / BUFFER_NORM_FACTOR  # 10 sec
-        # state[1, -1] = buffer_size  # 1 sec
-        # state[1, -1] = post_data['buffer'] / BUFFER_NORM_FACTOR  # /10s
         state[2, -1] = video_chunk_size / M_IN_K  # kilo byte
         state[3, -1] = float(video_chunk_size) / float(delay) / M_IN_K  # kilo byte / ms
-        # state[3, -1] = float(video_chunk_size) / float(delay) / M_IN_K  # kilo byte / ms
-        # state[3, -1] = float(video_chunk_size) / float(video_chunk_fetch_time) / M_IN_K  # kilo byte / ms
-        # state[4, -1] = penalty_sm / M_IN_K  # /1000
-        state[4, -1] = penalty_sm / 100
-
-
+        state[4, -1] = penalty_sm /100
 
         y_reward[-1] = reward  # linear reward
 
         if video_chunk_num > 0:
-            x_context[0, -1] = state[0, -1]  # bitrate
-            # x_context[1, -1] = state[1, -1]  # buffer
-            x_context[1, -1] = state[1, -2]  # buffer
-            x_context[2, -1] = state[2, -1] / M_IN_K  # chunksize     M byte
-            x_context[3, -1] = state[3, -2] * BUFFER_NORM_FACTOR  # throughput    kilo byte / ms * 10
-            x_context[4, -1] = state[3, -3] * BUFFER_NORM_FACTOR
-            x_context[5, -1] = state[3, -4] * BUFFER_NORM_FACTOR
-            x_context[6, -1] = state[3, -5] * BUFFER_NORM_FACTOR
-            x_context[7, -1] = state[3, -6] * BUFFER_NORM_FACTOR
-            x_context[8, -1] = state[4, -1]  # sm penalty
+            past_bandwidths = state[3, -6:-1]  # kilo byte / ms
+            while past_bandwidths[0] == 0.0:
+                past_bandwidths = past_bandwidths[1:]
+            bandwidth_sum = 0
+            for past_val in past_bandwidths:
+                bandwidth_sum += (1 / float(past_val))
+            past_harmonic_bandwidth = 1.0 / (bandwidth_sum / len(past_bandwidths))   # kilo byte / ms
+            past_chunksize = video_chunk_size / M_IN_K / M_IN_K  # chunksize     M byte
+            past_download_time = past_chunksize / past_harmonic_bandwidth   # seconds
+            past_penalty_rb = VMAF_REBUF_PENALTY_1 * max(0, past_download_time - (state[1, -2] * 10 ))
+            past_penalty_rb = past_penalty_rb / 100
+
+
+            x_context[0, -1] = state[0, -1]  # video quality
+            x_context[1, -1] = state[4, -1]  # sm penalty
+            x_context[2, -1] = past_penalty_rb  # rb penalty
 
             x = x_context[:, -1]
             x = np.array(x).reshape((X_D, 1))
@@ -260,44 +251,44 @@ def main():
             ba[max_a] += reward * x
             theta[max_a] = Aa_inv[max_a].dot(ba[max_a])
 
+        # x_context[0, -1] = state[0, -1]  # bitrate
+        # x_context[1, -1] = state[1, -1]  # buffer
+        # x_context[2, -1] = state[3, -2] * BUFFER_NORM_FACTOR  # throughput    kilo byte / ms * 10
+        #
+        #
+        # x = x_context[:, -1]
+        # x = np.array(x).reshape((X_D, 1))
+        # # update the Aa, ..., theta
+        # Aa[max_a] += np.outer(x, x)
+        # Aa_inv[max_a] = np.linalg.inv(Aa[max_a])
+        # ba[max_a] += reward * x
+        # theta[max_a] = Aa_inv[max_a].dot(ba[max_a])
+
         # the desicion for next video chunk:
         UCB_A = []
-        # BB_buffer = float(post_data['buffer'])
-        # bitrate_last_chunk = VIDEO_BIT_RATE[post_data['lastquality']]
-        # bitrate_last_chunk = VIDEO_BIT_RATE[bit_rate]
         vmaf_last_chunk = get_chunk_vmaf(bit_rate, video_chunk_num)
 
         # the context of different actions for the next video chunk:
         for i in range(0, A_DIM):
-            # bitrate_i = VIDEO_BIT_RATE[i] / float(np.max(VIDEO_BIT_RATE))    # normalized to 0-1
-            # bitrate_i = VIDEO_BIT_RATE[i] / M_IN_K  # /1000
+
             video_vmaf_i = get_chunk_vmaf(i, video_chunk_num + 1)
             video_quality_i = video_vmaf_i / 100  # vmaf1
-            # video_quality_i = video_vmaf_i * video_vmaf_i / M_IN_K  # /1000     # vmaf2
-            # start_buffer = float(post_data['buffer']) / BUFFER_NORM_FACTOR  # /10s
-            start_buffer = buffer_size / BUFFER_NORM_FACTOR  # 10 sec
-            # start_buffer = buffer_size   # 1 sec
-            # video_chunk_size_i = get_chunk_size(i, video_chunk_num) / M_IN_K / M_IN_K  # M byte
             video_chunk_size_i = next_video_chunk_sizes[i] / M_IN_K / M_IN_K  # M byte
-            # throughput_1 = state[3, -1]
-            # throughput_2 = state[3, -2]
-            # throughput_3 = state[3, -3]
-            # throughput_4 = state[3, -4]
-            # throughput_5 = state[3, -5]
-            throughput_1 = state[3, -1] * BUFFER_NORM_FACTOR
-            throughput_2 = state[3, -2] * BUFFER_NORM_FACTOR
-            throughput_3 = state[3, -3] * BUFFER_NORM_FACTOR
-            throughput_4 = state[3, -4] * BUFFER_NORM_FACTOR
-            throughput_5 = state[3, -5] * BUFFER_NORM_FACTOR
-            # penalty_sm_i = SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[i] - bitrate_last_chunk) / M_IN_K
-            # smoothness_dev_i = video_vmaf_i - vmaf_last_chunk
             smoothness_dev_i = abs(video_vmaf_i - vmaf_last_chunk)
             penalty_sm_i = SMOOTH_PENALTY * smoothness_dev_i / 100
-            # penalty_sm_i = SMOOTH_PENALTY * smoothness_dev_i * smoothness_dev_i / M_IN_K
 
+            past_bandwidths = state[3, -5:]  # kilo byte / ms
+            while past_bandwidths[0] == 0.0:
+                past_bandwidths = past_bandwidths[1:]
+            bandwidth_sum = 0
+            for past_val in past_bandwidths:
+                bandwidth_sum += (1 / float(past_val))
+            harmonic_bandwidth = 1.0 / (bandwidth_sum / len(past_bandwidths))  # kilo byte / ms
+            download_time_i = video_chunk_size_i / harmonic_bandwidth  # seconds
+            penalty_rb_i = VMAF_REBUF_PENALTY_1 * max(0, download_time_i - buffer_size)
+            penalty_rb_i = penalty_rb_i / 100
             cx_i = np.array(
-                [video_quality_i, start_buffer, video_chunk_size_i, throughput_1, throughput_2, throughput_3,
-                 throughput_4, throughput_5, penalty_sm_i])
+                [video_quality_i, penalty_sm_i, penalty_rb_i])
 
             x = cx_i
             x = np.array(x).reshape((X_D, 1))
@@ -308,9 +299,16 @@ def main():
             UCB_A.append(UCB_i)
 
         max_A = np.argmax(UCB_A)
-        idx = max_A
+        UCB_A = np.array(UCB_A)
+        while if_empty[max_A] < CARE_COUNT and buffer_size < buffer_level[max_A]:
+        # while buffer_size < buffer_level[max_A]:
+            UCB_A[max_A] = -1000000
+            max_A = np.argmax(UCB_A)
 
+
+        idx = max_A
         bit_rate = idx
+        if_empty[idx] += 1
 
         s_batch.append(state)
         X_batch.append(x_context)
@@ -353,6 +351,7 @@ def main():
             Aa_inv = np.zeros((A_DIM, X_D, X_D))
             ba = np.zeros((A_DIM, X_D, 1))
             theta = np.zeros((A_DIM, X_D, 1))
+            if_empty = np.zeros(A_DIM)
 
             for i in range(A_DIM):
                 Aa[i] = np.identity(X_D)

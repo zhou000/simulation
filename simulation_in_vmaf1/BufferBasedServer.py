@@ -34,20 +34,23 @@ BITRATE_LEVELS = 6
 # TEST_TRACES = '../longer_traces/'
 # TEST_TRACES = './simulation_traces/'
 # TEST_TRACES = '../cooked_test_traces/'
+VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 
 TEST_TRACES = sys.argv[1]
+VMAF_REBUF_PENALTY_1 = sys.argv[2]
 LOG_FILE = '../test_results/log_BB_server'
-VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
+
 
 VMAF_SMOOTH_PENALTY = 1
 VMAF_REBUF_PENALTY = 10000
-VMAF_REBUF_PENALTY_1 = 100
+
+
 
 # Debug
-# VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 # TEST_TRACES = '../cooked_test_traces/'
 # # TEST_TRACES = '../long_traces/'
 # LOG_FILE = '../test_results/log_BB_server'
+# VMAF_REBUF_PENALTY_1 = 100
 
 S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past

@@ -39,15 +39,18 @@ VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 # TEST_TRACES = '../cooked_test_traces/'
 
 VMAF_SMOOTH_PENALTY = 1
-VMAF_REBUF_PENALTY_1 = 100
+
 VMAF_REBUF_PENALTY = 10000
 
 TEST_TRACES = sys.argv[1]
 LOG_FILE = sys.argv[2]
+VMAF_REBUF_PENALTY_1 = sys.argv[3]
 
 # debug
 # TEST_TRACES = '../long_traces/'
 # LOG_FILE = '../test_results/log_robustMPC0'
+# VMAF_REBUF_PENALTY_1 = 100
+
 
 S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
