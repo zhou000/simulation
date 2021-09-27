@@ -37,7 +37,7 @@ BITRATE_LEVELS = 6
 VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 
 TEST_TRACES = sys.argv[1]
-VMAF_REBUF_PENALTY_1 = sys.argv[2]
+VMAF_REBUF_PENALTY_1 = float(sys.argv[2])
 LOG_FILE = '../test_results/log_BB_server'
 
 

@@ -2,8 +2,8 @@ import os
 import time
 
 TEST_LOG_FOLDER = '../test_results/'
-TEST_TRACES = '../cooked_test_traces/'
-# TEST_TRACES = '../long_traces/'
+# TEST_TRACES = '../cooked_test_traces/'
+TEST_TRACES = '../long_traces/'
 
 VMAF_REBUF_PENALTY_1 = 1
 # VMAF_REBUF_PENALTY_1 = 10

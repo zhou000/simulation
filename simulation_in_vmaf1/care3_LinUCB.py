@@ -35,7 +35,7 @@ VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 TEST_TRACES = sys.argv[1]
 LOG_FILE = sys.argv[2]
 alpha = float(sys.argv[3])
-VMAF_REBUF_PENALTY_1 = sys.argv[4]
+VMAF_REBUF_PENALTY_1 = float(sys.argv[4])
 
 # debug:
 # VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'

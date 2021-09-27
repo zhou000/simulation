@@ -42,7 +42,7 @@ VMAF_REBUF_PENALTY = 10000
 VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 TEST_TRACES = sys.argv[1]
 LOG_FILE = '../test_results/log_RB_server'
-VMAF_REBUF_PENALTY_1 = sys.argv[2]
+VMAF_REBUF_PENALTY_1 = float(sys.argv[2])
 
 # Debug
 # VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'

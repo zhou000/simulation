@@ -44,7 +44,7 @@ VMAF_REBUF_PENALTY = 10000
 
 TEST_TRACES = sys.argv[1]
 LOG_FILE = sys.argv[2]
-VMAF_REBUF_PENALTY_1 = sys.argv[3]
+VMAF_REBUF_PENALTY_1 = float(sys.argv[3])
 
 # debug
 # TEST_TRACES = '../long_traces/'
