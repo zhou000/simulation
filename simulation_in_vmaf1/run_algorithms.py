@@ -177,6 +177,8 @@ alg = './RateBasedServer.py '
 cmd_RB_server = "python " + alg + TEST_TRACES + ' ' + str(VMAF_REBUF_PENALTY_1)
 os.system(cmd_RB_server)
 
+
+
 # # for the BB9_LinUCB with 9d context, i.e., BB9_LinUCB0-5
 # LOG_FILE = '../test_results/log_BB9_LinUCB'
 # # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]

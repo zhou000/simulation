@@ -22,7 +22,7 @@ PACKET_SIZE = 1500  # bytes
 # VIDEO_SIZE_FILE = './long_video_size_'
 # VIDEO_SIZE_FILE = './simulation_video_size/chunksize_BBB_whole_1s/video_size_'
 # VIDEO_SIZE_FILE = './simulation_video_size/chunksize_ED_whole_1s/video_size_'
-VIDEO_SIZE_FILE = '../simulation_video_size/synthetic_video_size_BBB_ED/video_size_'
+VIDEO_SIZE_FILE = '../../simulation_video_size/synthetic_video_size_BBB_ED/video_size_'
 
 
 # VIDEO_SIZE_FILE = '../simulation_video_size/4600chunks/video_size_'
