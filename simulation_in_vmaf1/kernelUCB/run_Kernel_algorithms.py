@@ -84,7 +84,7 @@ os.system(cmd)
 
 
 # for the ctx3_KernelUCB with 3d context, i.e., ctx3_KernelUCB
-LOG_FILE = '../../test_results/log_ctx3_LinUCB'
+LOG_FILE = '../../test_results/log_ctx3_KernelUCB'
 # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
 # alpha = [5, 1, 0.1, 0.01, 0.001]
 # alpha = [5, 1, 0.1, 0.01]
@@ -93,6 +93,9 @@ alg = './ctx3_KernelUCB.py '
 cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1)
 print (cmd)
 os.system(cmd)
+
+
+
 
 
 

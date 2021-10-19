@@ -36,6 +36,7 @@ TEST_TRACES = sys.argv[1]
 LOG_FILE = sys.argv[2]
 alpha = float(sys.argv[3])
 VMAF_REBUF_PENALTY_1 = float(sys.argv[4])
+QUAITY_WEIGHT = float(sys.argv[5])
 
 # # debug:
 # VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
@@ -43,6 +44,7 @@ VMAF_REBUF_PENALTY_1 = float(sys.argv[4])
 # TEST_TRACES = '../long_traces/'
 # alpha = 5
 # VMAF_REBUF_PENALTY_1 = 100
+# QUAITY_WEIGHT = 1
 
 # S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_INFO = 5  # throughput, bit_rate, buffer_size, chunk_size, penalty_sm
@@ -155,7 +157,7 @@ def main():
         # -- VMAF reward 1 --
         # reward = vmaf - VMAF_SMOOTH_PENALTY * np.abs(vmaf_i - vmaf_j) - VMAF_REBUF_PENALTY * rebuffering_time
         # where VMAF_REBUF_PENALTY = 100
-        video_quality = get_chunk_vmaf(bit_rate, video_chunk_num)
+        video_quality = QUAITY_WEIGHT * get_chunk_vmaf(bit_rate, video_chunk_num)
 
         penalty_rb = VMAF_REBUF_PENALTY_1 * rebuf
 
@@ -272,7 +274,7 @@ def main():
             # bitrate_i = VIDEO_BIT_RATE[i] / float(np.max(VIDEO_BIT_RATE))    # normalized to 0-1
             # bitrate_i = VIDEO_BIT_RATE[i] / M_IN_K  # /1000
             video_vmaf_i = get_chunk_vmaf(i, video_chunk_num + 1)
-            video_quality_i = video_vmaf_i / 100  # vmaf1
+            video_quality_i = QUAITY_WEIGHT * video_vmaf_i / 100  # vmaf1
             # video_quality_i = video_vmaf_i * video_vmaf_i / M_IN_K  # /1000     # vmaf2
             # start_buffer = float(post_data['buffer']) / BUFFER_NORM_FACTOR  # /10s
             start_buffer = buffer_size / BUFFER_NORM_FACTOR  # 10 sec

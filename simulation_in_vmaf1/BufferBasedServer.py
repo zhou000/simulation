@@ -39,6 +39,7 @@ VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 TEST_TRACES = sys.argv[1]
 VMAF_REBUF_PENALTY_1 = float(sys.argv[2])
 LOG_FILE = '../test_results/log_BB_server'
+QUAITY_WEIGHT = float(sys.argv[3])
 
 
 VMAF_SMOOTH_PENALTY = 1
@@ -51,6 +52,8 @@ VMAF_REBUF_PENALTY = 10000
 # # TEST_TRACES = '../long_traces/'
 # LOG_FILE = '../test_results/log_BB_server'
 # VMAF_REBUF_PENALTY_1 = 100
+# QUAITY_WEIGHT = 1
+
 
 S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
@@ -157,7 +160,7 @@ def main():
         # -- VMAF reward 1 --
         # reward = vmaf - VMAF_SMOOTH_PENALTY * np.abs(vmaf_i - vmaf_j) - VMAF_REBUF_PENALTY * rebuffering_time
         # where VMAF_REBUF_PENALTY = 100
-        video_quality = get_chunk_vmaf(bit_rate, video_chunk_num)
+        video_quality = QUAITY_WEIGHT * get_chunk_vmaf(bit_rate, video_chunk_num)
 
         penalty_rb = VMAF_REBUF_PENALTY_1 * rebuf
 

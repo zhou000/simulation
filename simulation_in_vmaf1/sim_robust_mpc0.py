@@ -45,11 +45,13 @@ VMAF_REBUF_PENALTY = 10000
 TEST_TRACES = sys.argv[1]
 LOG_FILE = sys.argv[2]
 VMAF_REBUF_PENALTY_1 = float(sys.argv[3])
+QUAITY_WEIGHT = float(sys.argv[4])
 
 # debug
 # TEST_TRACES = '../long_traces/'
 # LOG_FILE = '../test_results/log_robustMPC0'
 # VMAF_REBUF_PENALTY_1 = 100
+# QUAITY_WEIGHT = 1
 
 
 S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
@@ -182,7 +184,7 @@ def main():
         # -- VMAF reward 1 --
         # reward = vmaf - VMAF_SMOOTH_PENALTY * np.abs(vmaf_i - vmaf_j) - VMAF_REBUF_PENALTY * rebuffering_time
         # where VMAF_REBUF_PENALTY = 100
-        video_quality = get_chunk_vmaf(bit_rate, video_chunk_num)
+        video_quality = QUAITY_WEIGHT * get_chunk_vmaf(bit_rate, video_chunk_num)
 
         penalty_rb = VMAF_REBUF_PENALTY_1 * rebuf
 
@@ -351,7 +353,7 @@ def main():
 
                 # vmaf reward 1
                 video_vmaf_i = get_chunk_vmaf(chunk_quality, index)
-                video_quality_i = video_vmaf_i / 100
+                video_quality_i = QUAITY_WEIGHT * video_vmaf_i / 100
                 bitrate_sum += video_quality_i
 
                 vmaf_last_chunk = get_chunk_vmaf(last_quality, index - 1)
