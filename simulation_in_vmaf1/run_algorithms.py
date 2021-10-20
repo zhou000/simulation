@@ -4,7 +4,8 @@ import time
 TEST_LOG_FOLDER = '../test_results/'
 # TEST_TRACES = '../cooked_test_traces/'
 # TEST_TRACES = '../long_traces/'
-TEST_TRACES = '../norway_bus_times1/'
+# TEST_TRACES = '../norway_bus_times1/'
+TEST_TRACES = '../norway_bus_times3/'
 
 VMAF_REBUF_PENALTY_1 = 1
 # VMAF_REBUF_PENALTY_1 = 10
@@ -12,8 +13,8 @@ VMAF_REBUF_PENALTY_1 = 1
 # VMAF_REBUF_PENALTY_1 = 50
 # VMAF_REBUF_PENALTY_1 = 100
 
-QUAITY_WEIGHT = 1
-# QUAITY_WEIGHT = 3
+# QUAITY_WEIGHT = 1
+QUAITY_WEIGHT = 3
 
 
 os.system('rm -r ' + TEST_LOG_FOLDER)
@@ -108,7 +109,7 @@ alg = './care1_LinUCB.py '
 
 for i in range(len(alpha)):
     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-    print cmd
+    print (cmd)
     os.system(cmd)
 
 

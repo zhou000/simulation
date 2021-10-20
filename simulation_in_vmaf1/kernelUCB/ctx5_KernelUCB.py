@@ -34,12 +34,14 @@ VIDEO_VMAF_FILE = '../../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 TEST_TRACES = sys.argv[1]
 LOG_FILE = sys.argv[2]
 VMAF_REBUF_PENALTY_1 = float(sys.argv[3])
+QUAITY_WEIGHT = float(sys.argv[4])
 
 # # debug:
 # VIDEO_VMAF_FILE = '../../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
 # LOG_FILE = '../../test_results/log_ctx5_KernelUCB0'
 # TEST_TRACES = '../../norway_bus_times1/'
 # VMAF_REBUF_PENALTY_1 = 100
+# QUAITY_WEIGHT = 1
 
 # print (os.getcwd())
 
@@ -155,7 +157,7 @@ def main():
         # -- VMAF reward 1 --
         # reward = vmaf - VMAF_SMOOTH_PENALTY * np.abs(vmaf_i - vmaf_j) - VMAF_REBUF_PENALTY * rebuffering_time
         # where VMAF_REBUF_PENALTY = 100
-        video_quality = get_chunk_vmaf(bit_rate, video_chunk_num)
+        video_quality = QUAITY_WEIGHT * get_chunk_vmaf(bit_rate, video_chunk_num)
 
         penalty_rb = VMAF_REBUF_PENALTY_1 * rebuf
 
@@ -274,7 +276,7 @@ def main():
             # bitrate_i = VIDEO_BIT_RATE[i] / float(np.max(VIDEO_BIT_RATE))    # normalized to 0-1
             # bitrate_i = VIDEO_BIT_RATE[i] / M_IN_K  # /1000
             video_vmaf_i = get_chunk_vmaf(i, video_chunk_num + 1)
-            video_quality_i = video_vmaf_i / 100  # vmaf1
+            video_quality_i = QUAITY_WEIGHT * video_vmaf_i / 100  # vmaf1
             # video_quality_i = video_vmaf_i * video_vmaf_i / M_IN_K  # /1000     # vmaf2
             start_buffer = buffer_size / BUFFER_NORM_FACTOR  # 10 sec
             video_chunk_size_i = next_video_chunk_sizes[i] / M_IN_K / M_IN_K  # M byte

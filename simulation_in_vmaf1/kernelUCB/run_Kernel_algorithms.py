@@ -5,6 +5,7 @@ TEST_LOG_FOLDER = '../../test_results/'
 # TEST_TRACES = '../cooked_test_traces/'
 # TEST_TRACES = '../long_traces/'
 TEST_TRACES = '../../norway_bus_times1/'
+# TEST_TRACES = '../../norway_bus_times3/'
 
 VMAF_REBUF_PENALTY_1 = 1
 # VMAF_REBUF_PENALTY_1 = 10
@@ -12,6 +13,9 @@ VMAF_REBUF_PENALTY_1 = 1
 # VMAF_REBUF_PENALTY_1 = 50
 # VMAF_REBUF_PENALTY_1 = 100
 
+
+# QUAITY_WEIGHT = 1
+QUAITY_WEIGHT = 3
 
 os.system('rm -r ' + TEST_LOG_FOLDER)
 os.system('mkdir ' + TEST_LOG_FOLDER)
@@ -30,7 +34,7 @@ LOG_FILE = '../../test_results/log_ctx13_KernelUCB'
 # alpha = [5, 1, 0.1, 0.01, 0.001]
 # alpha = [5, 1, 0.1, 0.01]
 alg = './ctx13_KernelUCB.py '
-cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1)
+cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
 print (cmd)
 os.system(cmd)
 
@@ -41,7 +45,7 @@ LOG_FILE = '../../test_results/log_ctx12_KernelUCB'
 # alpha = [5, 1, 0.1, 0.01, 0.001]
 # alpha = [5, 1, 0.1, 0.01]
 alg = './ctx12_KernelUCB.py '
-cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1)
+cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
 print (cmd)
 os.system(cmd)
 
@@ -55,7 +59,7 @@ LOG_FILE = '../../test_results/log_ctx9_KernelUCB'
 # alpha = [5]
 # alpha = 0.0001
 alg = './ctx9_KernelUCB.py '
-cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1)
+cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
 print (cmd)
 os.system(cmd)
 
@@ -67,7 +71,7 @@ LOG_FILE = '../../test_results/log_ctx7_KernelUCB'
 # alpha = [5, 1, 0.1, 0.01, 0.001]
 # alpha = [5, 1, 0.1, 0.01]
 alg = './ctx7_KernelUCB.py '
-cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1)
+cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
 print (cmd)
 os.system(cmd)
 
@@ -78,7 +82,7 @@ LOG_FILE = '../../test_results/log_ctx5_KernelUCB'
 # alpha = [5, 1, 0.1, 0.01, 0.001]
 # alpha = [5, 1, 0.1, 0.01]
 alg = './ctx5_KernelUCB.py '
-cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1)
+cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
 print (cmd)
 os.system(cmd)
 
@@ -90,7 +94,7 @@ LOG_FILE = '../../test_results/log_ctx3_KernelUCB'
 # alpha = [5, 1, 0.1, 0.01]
 # alpha = 0.0001
 alg = './ctx3_KernelUCB.py '
-cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1)
+cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
 print (cmd)
 os.system(cmd)
 
