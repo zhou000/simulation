@@ -5,6 +5,7 @@ import numpy as np
 # import tensorflow as tf
 import load_trace
 import sim_fixed_env as env
+import copy
 
 # VIDEO_BIT_RATE = [300,750,1200,1850,2850,4300]  # Kbps
 VIDEO_BIT_RATE = [344, 742, 1064, 2437, 4583, 6636]  # Kbps ************* VBR video bit_rate
@@ -30,18 +31,21 @@ VMAF_REBUF_PENALTY = 10000
 # VMAF_REBUF_PENALTY_1 = 100
 
 
-VIDEO_VMAF_FILE = '../../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
-TEST_TRACES = sys.argv[1]
-LOG_FILE = sys.argv[2]
-VMAF_REBUF_PENALTY_1 = float(sys.argv[3])
-QUAITY_WEIGHT = float(sys.argv[4])
-
-
-
-# # debug:
 # VIDEO_VMAF_FILE = '../../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
-# LOG_FILE = '../../test_results/log_ctx9_KernelUCB0'
+# TEST_TRACES = sys.argv[1]
+# LOG_FILE = sys.argv[2]
+# VMAF_REBUF_PENALTY_1 = float(sys.argv[3])
+# QUAITY_WEIGHT = float(sys.argv[4])
+
+
+
+# debug:
+VIDEO_VMAF_FILE = '../../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
+LOG_FILE = '../../test_results/log_ctx9_KernelUCB0'
 # TEST_TRACES = '../../norway_bus_times1/'
+TEST_TRACES = '../../norway_bus_times3/'
+VMAF_REBUF_PENALTY_1 = 1
+QUAITY_WEIGHT = 3
 # VMAF_REBUF_PENALTY_1 = 100
 # QUAITY_WEIGHT = 1
 
@@ -122,6 +126,8 @@ def main():
         # the action is from the last decision
         # this is to make the framework similar to the real
 
+        temp_env = copy.deepcopy(net_env)
+
         delay, sleep_time, buffer_size, rebuf, \
         video_chunk_size, next_video_chunk_sizes, next_2_video_chunk_sizes, avg_chunk_sizes, \
         end_of_video, video_chunk_remain, video_chunk_num = net_env.get_video_chunk(bit_rate, last_bit_rate)
@@ -184,6 +190,35 @@ def main():
         # reward = reward / M_IN_K    # normalize
 
 
+
+        regret = 0
+        if video_chunk_num > 0:
+            test_rewards = []
+            for i in range(BITRATE_LEVELS):
+                test_bitrate = i
+                # print ("the id of temp_env: ", id(temp_env))
+                test_env = copy.deepcopy(temp_env)
+                # print ("the id of test_env: ", id(test_env))
+                test_delay, test_sleep_time, test_buffer_size, test_rebuf, \
+                test_video_chunk_size, test_next_video_chunk_sizes, test_next_2_video_chunk_sizes, test_avg_chunk_sizes, \
+                test_end_of_video, test_video_chunk_remain, test_video_chunk_num = test_env.get_video_chunk(test_bitrate, last_bit_rate)
+
+                test_video_quality = QUAITY_WEIGHT * get_chunk_vmaf(test_bitrate, video_chunk_num)
+
+                test_penalty_rb = VMAF_REBUF_PENALTY_1 * test_rebuf
+
+                test_penalty_sm = VMAF_SMOOTH_PENALTY * abs(
+                    get_chunk_vmaf(test_bitrate, video_chunk_num) - get_chunk_vmaf(last_bit_rate, video_chunk_num - 1))
+
+                test_reward = test_video_quality - test_penalty_rb - test_penalty_sm
+                test_reward = test_reward / 100
+                test_rewards.append(test_reward)
+
+            oracle_A = np.argmax(test_rewards)
+            optimal = test_rewards[oracle_A]
+            regret = optimal - reward
+
+
         r_batch.append(reward)
 
         last_quality = last_bit_rate
@@ -203,7 +238,8 @@ def main():
                        # str(rush_flag) + '\t' +
                        # str(reward) + '\n')
                        str(reward) + '\t' +
-                       str(bit_rate) + '\n')
+                       str(regret) + '\n')
+                       # str(bit_rate) + '\n')
         log_file.flush()
 
         # retrieve previous state

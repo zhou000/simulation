@@ -4,17 +4,17 @@ import time
 TEST_LOG_FOLDER = '../test_results/'
 # TEST_TRACES = '../cooked_test_traces/'
 # TEST_TRACES = '../long_traces/'
-# TEST_TRACES = '../norway_bus_times1/'
-TEST_TRACES = '../norway_bus_times3/'
+TEST_TRACES = '../norway_bus_times1/'
+# TEST_TRACES = '../norway_bus_times3/'
 
-VMAF_REBUF_PENALTY_1 = 1
+# VMAF_REBUF_PENALTY_1 = 1
 # VMAF_REBUF_PENALTY_1 = 10
 # VMAF_REBUF_PENALTY_1 = 25
 # VMAF_REBUF_PENALTY_1 = 50
-# VMAF_REBUF_PENALTY_1 = 100
+VMAF_REBUF_PENALTY_1 = 100
 
-# QUAITY_WEIGHT = 1
-QUAITY_WEIGHT = 3
+QUAITY_WEIGHT = 1
+# QUAITY_WEIGHT = 3
 
 
 os.system('rm -r ' + TEST_LOG_FOLDER)
@@ -28,159 +28,179 @@ os.system('mkdir ' + TEST_LOG_FOLDER)
 
 
 
-# for the LinUCB with 13d context, i.e., ctx13_LinUCB0-5
-LOG_FILE = '../test_results/log_ctx13_LinUCB'
-# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
-alpha = [5, 1, 0.1, 0.01, 0.001]
-# alpha = [5, 1, 0.1, 0.01]
-alg = './ctx13_LinUCB.py '
-
-for i in range(len(alpha)):
-    cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-    print (cmd)
-    os.system(cmd)
-
-
-# for the LinUCB with 12d context, i.e., ctx12_LinUCB0-5
-LOG_FILE = '../test_results/log_ctx12_LinUCB'
-# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
-alpha = [5, 1, 0.1, 0.01, 0.001]
-# alpha = [5, 1, 0.1, 0.01]
-alg = './ctx12_LinUCB.py '
-
-for i in range(len(alpha)):
-    cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-    print (cmd)
-    os.system(cmd)
-
-
-
-
-# for the LinUCB with 9d context, i.e., ctx9_LinUCB0-5
-LOG_FILE = '../test_results/log_ctx9_LinUCB'
-# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
-alpha = [5, 1, 0.1, 0.01, 0.001]
-# alpha = [5, 1, 0.1, 0.01]
-# alpha = [5]
-# alpha = 0.0001
-alg = './ctx9_LinUCB.py '
-
-for i in range(len(alpha)):
-    cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-    print (cmd)
-    os.system(cmd)
-
-
-
-
-# for the LinUCB with 7d context, i.e., ctx7_LinUCB0-5
-LOG_FILE = '../test_results/log_ctx7_LinUCB'
-# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
-alpha = [5, 1, 0.1, 0.01, 0.001]
-# alpha = [5, 1, 0.1, 0.01]
-alg = './ctx7_LinUCB.py '
-
-for i in range(len(alpha)):
-    cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-    print (cmd)
-    os.system(cmd)
-
-
-# for the LinUCB with 5d context, i.e., ctx5_LinUCB0-5
-LOG_FILE = '../test_results/log_ctx5_LinUCB'
-# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
-alpha = [5, 1, 0.1, 0.01, 0.001]
-# alpha = [5, 1, 0.1, 0.01]
-alg = './ctx5_LinUCB.py '
-
-for i in range(len(alpha)):
-    cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-    print (cmd)
-    os.system(cmd)
-
-
-# for the care1_LinUCB with 3d context, i.e., care1_LinUCB0-5
-LOG_FILE = '../test_results/log_care1_LinUCB'
-# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
-alpha = [5, 1, 0.1, 0.01, 0.001]
-# alpha = [5, 1, 0.1, 0.01]
-# alpha = 0.0001
-alg = './care1_LinUCB.py '
-
-for i in range(len(alpha)):
-    cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-    print (cmd)
-    os.system(cmd)
-
-
-# # for the care3_LinUCB with 3d context, i.e., care3_LinUCB0-5
-# LOG_FILE = '../test_results/log_care3_LinUCB'
+# # for the LinUCB with 13d context, i.e., ctx13_LinUCB0-5
+# LOG_FILE = '../test_results/log_ctx13_LinUCB'
 # # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
 # alpha = [5, 1, 0.1, 0.01, 0.001]
 # # alpha = [5, 1, 0.1, 0.01]
-# # alpha = 0.0001
-# alg = './care3_LinUCB.py '
+# alg = './ctx13_LinUCB.py '
 #
 # for i in range(len(alpha)):
-#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1)
-#     print cmd
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
+#
+#
+# # for the LinUCB with 12d context, i.e., ctx12_LinUCB0-5
+# LOG_FILE = '../test_results/log_ctx12_LinUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# # alpha = [5, 1, 0.1, 0.01]
+# alg = './ctx12_LinUCB.py '
+#
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
 #     os.system(cmd)
 #
 #
 #
-# # for the care5_LinUCB with 3d context, i.e., care5_LinUCB0-5
-# LOG_FILE = '../test_results/log_care5_LinUCB'
+#
+# # for the LinUCB with 9d context, i.e., ctx9_LinUCB0-5
+# LOG_FILE = '../test_results/log_ctx9_LinUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# # alpha = [5, 1, 0.1, 0.01]
+# # alpha = [5]
+# # alpha = 0.0001
+# alg = './ctx9_LinUCB.py '
+#
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
+#
+#
+#
+#
+# # for the LinUCB with 7d context, i.e., ctx7_LinUCB0-5
+# LOG_FILE = '../test_results/log_ctx7_LinUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# # alpha = [5, 1, 0.1, 0.01]
+# alg = './ctx7_LinUCB.py '
+#
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
+#
+#
+# # for the LinUCB with 5d context, i.e., ctx5_LinUCB0-5
+# LOG_FILE = '../test_results/log_ctx5_LinUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# # alpha = [5, 1, 0.1, 0.01]
+# alg = './ctx5_LinUCB.py '
+#
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
+#
+#
+# # for the care1_LinUCB with 3d context, i.e., care1_LinUCB0-5
+# LOG_FILE = '../test_results/log_care1_LinUCB'
 # # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
 # alpha = [5, 1, 0.1, 0.01, 0.001]
 # # alpha = [5, 1, 0.1, 0.01]
 # # alpha = 0.0001
-# alg = './care5_LinUCB.py '
+# alg = './care1_LinUCB.py '
 #
 # for i in range(len(alpha)):
-#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1)
-#     print cmd
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
+#
+#
+# # # for the care3_LinUCB with 3d context, i.e., care3_LinUCB0-5
+# # LOG_FILE = '../test_results/log_care3_LinUCB'
+# # # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# # alpha = [5, 1, 0.1, 0.01, 0.001]
+# # # alpha = [5, 1, 0.1, 0.01]
+# # # alpha = 0.0001
+# # alg = './care3_LinUCB.py '
+# #
+# # for i in range(len(alpha)):
+# #     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1)
+# #     print cmd
+# #     os.system(cmd)
+# #
+# #
+# #
+# # # for the care5_LinUCB with 3d context, i.e., care5_LinUCB0-5
+# # LOG_FILE = '../test_results/log_care5_LinUCB'
+# # # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# # alpha = [5, 1, 0.1, 0.01, 0.001]
+# # # alpha = [5, 1, 0.1, 0.01]
+# # # alpha = 0.0001
+# # alg = './care5_LinUCB.py '
+# #
+# # for i in range(len(alpha)):
+# #     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1)
+# #     print cmd
+# #     os.system(cmd)
+#
+#
+#
+# # for the ctx3_LinUCB with 3d context, i.e., ctx3_LinUCB0-5
+# LOG_FILE = '../test_results/log_ctx3_LinUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# # alpha = [5, 1, 0.1, 0.01]
+# # alpha = 0.0001
+# alg = './ctx3_LinUCB.py '
+#
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
 #     os.system(cmd)
 
 
+# # robust_MPC0
+# LOG_FILE = '../test_results/log_robustMPC0'
+# alg = './sim_robust_mpc0.py '
+#
+# cmd_robust_MPC0 = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+# print (cmd_robust_MPC0)
+# begin_time = time.time()
+# os.system(cmd_robust_MPC0)
+# end_time = time.time()
+# running_time = end_time - begin_time
+# print ('running_time for MPC0: ', running_time)
+#
+#
+# # # BB_server
+# # # LOG_FILE = '../test_results/log_BB_server'
+# # alg = './BufferBasedServer.py '
+# # cmd_BB_server = "python " + alg + TEST_TRACES + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+# # os.system(cmd_BB_server)
+#
+#
+# # RB_server
+# # LOG_FILE = '../test_results/log_RB_server'
+# alg = './RateBasedServer.py '
+# cmd_RB_server = "python " + alg + TEST_TRACES + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+# os.system(cmd_RB_server)
+#
+# # Lin_RB
+# LOG_FILE = '../test_results/log_LinRB'
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# alg = './LinUCB_RB1.py '
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
 
-# for the ctx3_LinUCB with 3d context, i.e., ctx3_LinUCB0-5
-LOG_FILE = '../test_results/log_ctx3_LinUCB'
-# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+
+# LinMPC
+LOG_FILE = '../test_results/log_LinMPC'
 alpha = [5, 1, 0.1, 0.01, 0.001]
-# alpha = [5, 1, 0.1, 0.01]
-# alpha = 0.0001
-alg = './ctx3_LinUCB.py '
-
+alg = './LinUCB_mpc1.py '
 for i in range(len(alpha)):
     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
     print (cmd)
     os.system(cmd)
-
-
-# robust_MPC0
-LOG_FILE = '../test_results/log_robustMPC0'
-alg = './sim_robust_mpc0.py '
-
-cmd_robust_MPC0 = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-print (cmd_robust_MPC0)
-begin_time = time.time()
-os.system(cmd_robust_MPC0)
-end_time = time.time()
-running_time = end_time - begin_time
-print ('running_time for MPC0: ', running_time)
-
-
-# BB_server
-# LOG_FILE = '../test_results/log_BB_server'
-alg = './BufferBasedServer.py '
-cmd_BB_server = "python " + alg + TEST_TRACES + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-os.system(cmd_BB_server)
-
-
-# RB_server
-alg = './RateBasedServer.py '
-cmd_RB_server = "python " + alg + TEST_TRACES + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-os.system(cmd_RB_server)
 
 
 
