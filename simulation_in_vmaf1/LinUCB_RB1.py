@@ -65,9 +65,17 @@ X_INFO = 8  # throughput*5, bit_rate, buffer_size, chunk_size, penalty_sm
 X_D = X_INFO
 X_LEN = 8
 Y_LEN = 8  # take how many rewards in the past
-UCB_DIM = 11   # the number of action of LinUCB
-# UCB_ACTION = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 4]
-UCB_ACTION = [0.5, 0.65, 0.8, 0.95, 1.1, 1.25, 1.4, 1.55, 1.7, 1.85, 2]
+# UCB_DIM = 11   # the number of action of LinUCB
+# UCB_ACTION = [0.5, 0.65, 0.8, 0.95, 1.1, 1.25, 1.4, 1.55, 1.7, 1.85, 2]
+UCB_DIM = 11
+UCB_ACTION = [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5]
+# UCB_DIM = 16
+# UCB_ACTION = [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]
+
+
+
+# UCB_DIM = 16
+# UCB_ACTION = [0.25, 0.4, 0.55, 0.7, 0.85, 1, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4, 3.7, 4.0]
 
 # alpha = 5
 # alpha = 1

@@ -59,14 +59,16 @@ QUAITY_WEIGHT = float(sys.argv[5])
 S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
 MPC_FUTURE_CHUNK_COUNT = 5
+# MPC_FUTURE_CHUNK_COUNT = 3
 A_DIM = 6
 X_INFO = 8  # throughput*5, bit_rate, buffer_size, chunk_size, penalty_sm
 X_D = X_INFO
 X_LEN = 8
 Y_LEN = 8  # take how many rewards in the past
 UCB_DIM = 11   # the number of action of LinUCB
-# UCB_ACTION = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 4]
-UCB_ACTION = [0.5, 0.65, 0.8, 0.95, 1.1, 1.25, 1.4, 1.55, 1.7, 1.85, 2]
+# UCB_ACTION = [0.5, 0.65, 0.8, 0.95, 1.1, 1.25, 1.4, 1.55, 1.7, 1.85, 2]
+
+UCB_ACTION = [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5]
 BITS_IN_BYTE = 8
 
 # alpha = 5
@@ -110,6 +112,8 @@ def get_chunk_vmaf(quality, index):
 
 
 def main():
+    START_time = time.time()
+
     for bitrate in xrange(BITRATE_LEVELS):
         video_vmaf[bitrate] = []
         with open(VIDEO_VMAF_FILE + str(bitrate)) as f:
@@ -123,8 +127,18 @@ def main():
             for line in f:
                 video_size[bitrate].append(int(line.split()[0]))
 
-    for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
+    # for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
+    #     CHUNK_COMBO_OPTIONS.append(combo)
+
+    combos = [[0,0,0,0,0],[1,1,1,1,1],[2,2,2,2,2],[3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]]
+    for i in range(A_DIM):
+        combo = combos[i]
         CHUNK_COMBO_OPTIONS.append(combo)
+
+    # combos = [[0,0,0],[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5]]
+    # for i in range(A_DIM):
+    #     combo = combos[i]
+    #     CHUNK_COMBO_OPTIONS.append(combo)
 
     np.random.seed(RANDOM_SEED)
 
@@ -172,15 +186,22 @@ def main():
     Y_batch = [np.zeros(Y_LEN)]
 
     video_count = 0
+    TOTAL_downloading_time = 0
+    TOTAL_decision_time = 0
 
     while True:  # serve video forever
         # the action is from the last decision
         # this is to make the framework similar to the real
 
+        start_time_stamp = time.time()
+
+
         delay, sleep_time, buffer_size, rebuf, \
         video_chunk_size, next_video_chunk_sizes, next_2_video_chunk_sizes, avg_chunk_sizes, \
         end_of_video, video_chunk_remain, video_chunk_num = net_env.get_video_chunk(bit_rate, last_bit_rate)
         # next_5_chunk_quality, buffer_remain_ratio, rush_flag= net_env.get_video_chunk(bit_rate, last_bit_rate)
+
+        time_stamp_1 = time.time()
 
         time_stamp += delay  # in ms
         time_stamp += sleep_time  # in ms
@@ -308,6 +329,8 @@ def main():
             curr_error = abs(past_bandwidth_ests[-1] - state[3, -1]) / float(state[3, -1])
         past_errors.append(curr_error)
 
+        time_stamp_2 = time.time()
+
         # past_throughput = state[3, -X_LEN:] * M_IN_K * BITS_IN_BYTE     # kilo bits / second
         past_throughput = state[3, -X_LEN:]  # kilo byte / ms
         context = past_throughput
@@ -342,29 +365,29 @@ def main():
         predict_throughput = mean_throughput * UCB_ACTION[max_A]
         RB_bitrate = predict_throughput * M_IN_K * BITS_IN_BYTE
 
-        # pick bitrate according to MPC
-        # first get harmonic mean of last 5 bandwidths
-        past_bandwidths = state[3, -5:]  # kilo byte / ms
-        while past_bandwidths[0] == 0.0:
-            past_bandwidths = past_bandwidths[1:]
-        # if ( len(state) < 5 ):
-        #    past_bandwidths = state[3,-len(state):]
-        # else:
-        #    past_bandwidths = state[3,-5:]
-        bandwidth_sum = 0
-        for past_val in past_bandwidths:
-            bandwidth_sum += (1 / float(past_val))
-        harmonic_bandwidth = 1.0 / (bandwidth_sum / len(past_bandwidths))
-
-        # future bandwidth prediction
-        # divide by 1 + max of last 5 (or up to 5) errors
-        max_error = 0
-        error_pos = -5
-        if (len(past_errors) < 5):
-            error_pos = -len(past_errors)
-        max_error = float(max(past_errors[error_pos:]))
-        future_bandwidth = harmonic_bandwidth / (1 + max_error)
-        past_bandwidth_ests.append(harmonic_bandwidth)
+        # # pick bitrate according to MPC
+        # # first get harmonic mean of last 5 bandwidths
+        # past_bandwidths = state[3, -5:]  # kilo byte / ms
+        # while past_bandwidths[0] == 0.0:
+        #     past_bandwidths = past_bandwidths[1:]
+        # # if ( len(state) < 5 ):
+        # #    past_bandwidths = state[3,-len(state):]
+        # # else:
+        # #    past_bandwidths = state[3,-5:]
+        # bandwidth_sum = 0
+        # for past_val in past_bandwidths:
+        #     bandwidth_sum += (1 / float(past_val))
+        # harmonic_bandwidth = 1.0 / (bandwidth_sum / len(past_bandwidths))
+        #
+        # # future bandwidth prediction
+        # # divide by 1 + max of last 5 (or up to 5) errors
+        # max_error = 0
+        # error_pos = -5
+        # if (len(past_errors) < 5):
+        #     error_pos = -len(past_errors)
+        # max_error = float(max(past_errors[error_pos:]))
+        # future_bandwidth = harmonic_bandwidth / (1 + max_error)
+        # past_bandwidth_ests.append(harmonic_bandwidth)
 
         future_bandwidth = predict_throughput
 
@@ -469,12 +492,22 @@ def main():
 
         # send data to html side (first chunk of best combo)
         send_data = 0  # no combo had reward better than -1000000 (ERROR) so send 0
+        best_combo = tuple(best_combo)
         if (best_combo != ()):  # some combo was good
+            # print ('chunk num: ', video_chunk_num, "  ", best_combo[0], ' full combo: ', best_combo)
+            # x = best_combo[0]
             send_data = best_combo[0]
+            # print (send_data)
             # print (send_data)
 
         end = time.time()
         # print "TOOK: " + str(end-start)
+
+        time_stamp_3 = time.time()
+        TOTAL_downloading_time += delay / M_IN_K
+        TOTAL_decision_time += time_stamp_3 - time_stamp_2
+        # print ("Chunk num: ", video_chunk_num, " Downloading time: ", str(delay), " Processing time1: ", str(time_stamp_1-start_time_stamp), " Processing time2: ", str(time_stamp_2-time_stamp_1), " Processing time3: ", str(time_stamp_3-time_stamp_2))
+
 
         bit_rate = send_data
 
@@ -485,6 +518,10 @@ def main():
         # entropy_record.append(a3c.compute_entropy(action_prob[0]))
 
         if end_of_video:
+            # print ("TOTAL_downloading_time: ", TOTAL_downloading_time, " TOTAL_decision_time", TOTAL_decision_time)
+            # TOTAL_downloading_time = 0
+            # TOTAL_decision_time = 0
+
             log_file.write('\n')
             log_file.close()
 
@@ -527,6 +564,11 @@ def main():
                 ba[i] = np.zeros((X_D, 1))
                 theta[i] = np.zeros((X_D, 1))
 
+
+
+
+    END_time = time.time()
+    TOTAL_time = END_time - START_time
 
 if __name__ == '__main__':
     main()

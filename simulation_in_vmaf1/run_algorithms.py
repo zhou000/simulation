@@ -182,7 +182,7 @@ os.system('mkdir ' + TEST_LOG_FOLDER)
 # alg = './RateBasedServer.py '
 # cmd_RB_server = "python " + alg + TEST_TRACES + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
 # os.system(cmd_RB_server)
-#
+
 # # Lin_RB
 # LOG_FILE = '../test_results/log_LinRB'
 # alpha = [5, 1, 0.1, 0.01, 0.001]
@@ -191,17 +191,28 @@ os.system('mkdir ' + TEST_LOG_FOLDER)
 #     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
 #     print (cmd)
 #     os.system(cmd)
+#
+#
+# # LinMPC
+# LOG_FILE = '../test_results/log_LinMPC'
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# alg = './LinUCB_mpc1.py '
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
 
 
-# LinMPC
-LOG_FILE = '../test_results/log_LinMPC'
+# CoarseUCB
+LOG_FILE = '../test_results/log_CoarseUCB'
+# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
 alpha = [5, 1, 0.1, 0.01, 0.001]
-alg = './LinUCB_mpc1.py '
+alg = './CoarseUCB.py '
+
 for i in range(len(alpha)):
     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
     print (cmd)
     os.system(cmd)
-
 
 
 # # for the BB9_LinUCB with 9d context, i.e., BB9_LinUCB0-5
