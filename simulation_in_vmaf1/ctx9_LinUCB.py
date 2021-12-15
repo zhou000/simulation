@@ -3,7 +3,7 @@ import sys
 
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 import load_trace
 import sim_fixed_env as env
 import copy
@@ -25,31 +25,32 @@ BITS_IN_BYTE = 8.0
 # TEST_TRACES = '../longer_traces/'
 # TEST_TRACES = './simulation_traces/'
 # TEST_TRACES = '../cooked_test_traces/'
-TOTAL_VIDEO_CHUNKS = 1250
+# TOTAL_VIDEO_CHUNKS = 1250
+TOTAL_VIDEO_CHUNKS = 596
 BITRATE_LEVELS = 6
 VMAF_SMOOTH_PENALTY = 1
 VMAF_REBUF_PENALTY = 10000
-
-
-
 # VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
-# TEST_TRACES = sys.argv[1]
-# LOG_FILE = sys.argv[2]
-# alpha = float(sys.argv[3])
-# VMAF_REBUF_PENALTY_1 = float(sys.argv[4])
-# QUAITY_WEIGHT = float(sys.argv[5])
+VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_vmaf_1s/vmaf_'
 
-# debug:
-VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
-LOG_FILE = '../test_results/log_ctx9_LinUCB0'
-# TEST_TRACES = '../norway_bus_times1/'
-TEST_TRACES = '../norway_bus_times3/'
-# alpha = 5
-alpha = 0.01
+
+TEST_TRACES = sys.argv[1]
+LOG_FILE = sys.argv[2]
+alpha = float(sys.argv[3])
+VMAF_REBUF_PENALTY_1 = float(sys.argv[4])
+QUAITY_WEIGHT = float(sys.argv[5])
+
+# # debug:
+# LOG_FILE = '../test_results/log_ctx9_LinUCB0'
+# TEST_TRACES = '../norway_bus_5/'
+# # TEST_TRACES = '../norway_bus_times1/'
+# # TEST_TRACES = '../norway_bus_times3/'
+# # alpha = 5
+# alpha = 0.1
 # VMAF_REBUF_PENALTY_1 = 100
 # QUAITY_WEIGHT = 1
-VMAF_REBUF_PENALTY_1 = 1
-QUAITY_WEIGHT = 3
+# # VMAF_REBUF_PENALTY_1 = 1
+# # QUAITY_WEIGHT = 3
 
 # S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_INFO = 5  # throughput, bit_rate, buffer_size, chunk_size, penalty_sm
@@ -71,7 +72,7 @@ def get_chunk_vmaf(quality, index):
 
 def main():
 
-    for bitrate in xrange(BITRATE_LEVELS):
+    for bitrate in range(BITRATE_LEVELS):
         video_vmaf[bitrate] = []
         with open(VIDEO_VMAF_FILE + str(bitrate)) as f:
             for line in f:
@@ -188,32 +189,32 @@ def main():
         # reward = video_quality - penalty_rb - penalty_sm
         # reward = reward / M_IN_K    # normalize
 
-        regret = 0
-        if video_chunk_num > 0:
-            test_rewards = []
-            for i in range(BITRATE_LEVELS):
-                test_bitrate = i
-                # print ("the id of temp_env: ", id(temp_env))
-                test_env = copy.deepcopy(temp_env)
-                # print ("the id of test_env: ", id(test_env))
-                test_delay, test_sleep_time, test_buffer_size, test_rebuf, \
-                test_video_chunk_size, test_next_video_chunk_sizes, test_next_2_video_chunk_sizes, test_avg_chunk_sizes, \
-                test_end_of_video, test_video_chunk_remain, test_video_chunk_num = test_env.get_video_chunk(test_bitrate, last_bit_rate)
-
-                test_video_quality = QUAITY_WEIGHT * get_chunk_vmaf(test_bitrate, video_chunk_num)
-
-                test_penalty_rb = VMAF_REBUF_PENALTY_1 * test_rebuf
-
-                test_penalty_sm = VMAF_SMOOTH_PENALTY * abs(
-                    get_chunk_vmaf(test_bitrate, video_chunk_num) - get_chunk_vmaf(last_bit_rate, video_chunk_num - 1))
-
-                test_reward = test_video_quality - test_penalty_rb - test_penalty_sm
-                test_reward = test_reward / 100
-                test_rewards.append(test_reward)
-
-            oracle_A = np.argmax(test_rewards)
-            optimal = test_rewards[oracle_A]
-            regret = optimal - reward
+        # regret = 0
+        # if video_chunk_num > 0:
+        #     test_rewards = []
+        #     for i in range(BITRATE_LEVELS):
+        #         test_bitrate = i
+        #         # print ("the id of temp_env: ", id(temp_env))
+        #         test_env = copy.deepcopy(temp_env)
+        #         # print ("the id of test_env: ", id(test_env))
+        #         test_delay, test_sleep_time, test_buffer_size, test_rebuf, \
+        #         test_video_chunk_size, test_next_video_chunk_sizes, test_next_2_video_chunk_sizes, test_avg_chunk_sizes, \
+        #         test_end_of_video, test_video_chunk_remain, test_video_chunk_num = test_env.get_video_chunk(test_bitrate, last_bit_rate)
+        #
+        #         test_video_quality = QUAITY_WEIGHT * get_chunk_vmaf(test_bitrate, video_chunk_num)
+        #
+        #         test_penalty_rb = VMAF_REBUF_PENALTY_1 * test_rebuf
+        #
+        #         test_penalty_sm = VMAF_SMOOTH_PENALTY * abs(
+        #             get_chunk_vmaf(test_bitrate, video_chunk_num) - get_chunk_vmaf(last_bit_rate, video_chunk_num - 1))
+        #
+        #         test_reward = test_video_quality - test_penalty_rb - test_penalty_sm
+        #         test_reward = test_reward / 100
+        #         test_rewards.append(test_reward)
+        #
+        #     oracle_A = np.argmax(test_rewards)
+        #     optimal = test_rewards[oracle_A]
+        #     regret = optimal - reward
 
 
 
@@ -224,7 +225,7 @@ def main():
 
         # log time_stamp, bit_rate, buffer_size, reward
         # log_file.write(str(time_stamp / M_IN_K) + '\t' +
-        log_file.write(str(video_chunk_num) + '\t' +
+        str_log = (str(video_chunk_num) + '\t' +
                        # str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
                        str(video_quality) + '\t' +
                        str(buffer_size) + '\t' +
@@ -234,9 +235,22 @@ def main():
                        # str(last_quality) + '\t' +
                        # str(buffer_remain_ratio) + '\t' +
                        # str(rush_flag) + '\t' +
-                       # str(reward) + '\n')
-                       str(reward) + '\t' +
-                       str(regret) + '\n')
+                       str(reward) + '\n')
+        str_log = str_log.encode()
+        log_file.write(str_log)
+        # log_file.write(str(video_chunk_num) + '\t' +
+        #                # str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
+        #                str(video_quality) + '\t' +
+        #                str(buffer_size) + '\t' +
+        #                str(rebuf) + '\t' +
+        #                str(video_chunk_size) + '\t' +
+        #                str(delay) + '\t' +
+        #                # str(last_quality) + '\t' +
+        #                # str(buffer_remain_ratio) + '\t' +
+        #                # str(rush_flag) + '\t' +
+        #                str(reward) + '\n')
+        #                # str(reward) + '\t' +
+        #                # str(regret) + '\n')
         log_file.flush()
 
 
@@ -280,16 +294,17 @@ def main():
         y_reward[-1] = reward  # linear reward
 
         if video_chunk_num > 0:
-            x_context[0, -1] = state[0, -1]  # bitrate
-            # x_context[1, -1] = state[1, -1]  # buffer
-            x_context[1, -1] = state[1, -2]  # buffer
-            x_context[2, -1] = state[2, -1] / M_IN_K  # chunksize     M byte
-            x_context[3, -1] = state[3, -2] * BUFFER_NORM_FACTOR  # throughput    kilo byte / ms * 10
-            x_context[4, -1] = state[3, -3] * BUFFER_NORM_FACTOR
-            x_context[5, -1] = state[3, -4] * BUFFER_NORM_FACTOR
-            x_context[6, -1] = state[3, -5] * BUFFER_NORM_FACTOR
-            x_context[7, -1] = state[3, -6] * BUFFER_NORM_FACTOR
-            x_context[8, -1] = state[4, -1]  # sm penalty
+            x_context[:, -1] = max_context
+            # x_context[0, -1] = state[0, -1]  # bitrate
+            # # x_context[1, -1] = state[1, -1]  # buffer
+            # x_context[1, -1] = state[1, -2]  # buffer
+            # x_context[2, -1] = state[2, -1] / M_IN_K  # chunksize     M byte
+            # x_context[3, -1] = state[3, -2] * BUFFER_NORM_FACTOR  # throughput    kilo byte / ms * 10
+            # x_context[4, -1] = state[3, -3] * BUFFER_NORM_FACTOR
+            # x_context[5, -1] = state[3, -4] * BUFFER_NORM_FACTOR
+            # x_context[6, -1] = state[3, -5] * BUFFER_NORM_FACTOR
+            # x_context[7, -1] = state[3, -6] * BUFFER_NORM_FACTOR
+            # x_context[8, -1] = state[4, -1]  # sm penalty
 
             x = x_context[:, -1]
             x = np.array(x).reshape((X_D, 1))
@@ -305,6 +320,7 @@ def main():
         # bitrate_last_chunk = VIDEO_BIT_RATE[post_data['lastquality']]
         # bitrate_last_chunk = VIDEO_BIT_RATE[bit_rate]
         vmaf_last_chunk = get_chunk_vmaf(bit_rate, video_chunk_num)
+        future_contexts = []
 
         # the context of different actions for the next video chunk:
         for i in range(0, A_DIM):
@@ -337,6 +353,7 @@ def main():
             cx_i = np.array(
                 [video_quality_i, start_buffer, video_chunk_size_i, throughput_1, throughput_2, throughput_3,
                  throughput_4, throughput_5, penalty_sm_i])
+            future_contexts.append(cx_i)
 
             x = cx_i
             x = np.array(x).reshape((X_D, 1))
@@ -347,6 +364,7 @@ def main():
             UCB_A.append(UCB_i)
 
         max_A = np.argmax(UCB_A)
+        max_context = future_contexts[max_A]
         idx = max_A
 
         bit_rate = idx
@@ -358,7 +376,7 @@ def main():
         # entropy_record.append(a3c.compute_entropy(action_prob[0]))
 
         if end_of_video:
-            log_file.write('\n')
+            log_file.write(('\n').encode())
             log_file.close()
 
             last_bit_rate = DEFAULT_QUALITY

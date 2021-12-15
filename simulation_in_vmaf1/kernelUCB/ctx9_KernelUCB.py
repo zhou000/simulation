@@ -226,7 +226,7 @@ def main():
 
         # log time_stamp, bit_rate, buffer_size, reward
         # log_file.write(str(time_stamp / M_IN_K) + '\t' +
-        log_file.write(str(video_chunk_num) + '\t' +
+        str_log = (str(video_chunk_num) + '\t' +
                        # str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
                        str(video_quality) + '\t' +
                        str(buffer_size) + '\t' +
@@ -239,7 +239,22 @@ def main():
                        # str(reward) + '\n')
                        str(reward) + '\t' +
                        str(regret) + '\n')
-                       # str(bit_rate) + '\n')
+        str_log = str_log.encode()
+        log_file.write(str_log)
+        # log_file.write(str(video_chunk_num) + '\t' +
+        #                # str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
+        #                str(video_quality) + '\t' +
+        #                str(buffer_size) + '\t' +
+        #                str(rebuf) + '\t' +
+        #                str(video_chunk_size) + '\t' +
+        #                str(delay) + '\t' +
+        #                # str(last_quality) + '\t' +
+        #                # str(buffer_remain_ratio) + '\t' +
+        #                # str(rush_flag) + '\t' +
+        #                # str(reward) + '\n')
+        #                str(reward) + '\t' +
+        #                str(regret) + '\n')
+        #                # str(bit_rate) + '\n')
         log_file.flush()
 
         # retrieve previous state
@@ -347,7 +362,7 @@ def main():
 
 
         if end_of_video:
-            log_file.write('\n')
+            log_file.write(('\n').encode())
             log_file.close()
 
             last_bit_rate = DEFAULT_QUALITY

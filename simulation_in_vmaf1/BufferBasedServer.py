@@ -3,7 +3,7 @@ import sys
 
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 import load_trace
 import sim_fixed_env as env
 import time
@@ -16,9 +16,11 @@ BITRATE_REWARD_MAP = {0: 0, 344: 1, 742: 2, 1064: 3, 2437: 12, 4583: 15, 6636: 2
 BITRATE_REWARD = [1, 2, 3, 12, 15, 20]
 BUFFER_NORM_FACTOR = 10.0
 # CHUNK_TIL_VIDEO_END_CAP = 48.0
-CHUNK_TIL_VIDEO_END_CAP = 1250.0
+# CHUNK_TIL_VIDEO_END_CAP = 1250.0
+CHUNK_TIL_VIDEO_END_CAP = 596.0
 # CHUNK_TIL_VIDEO_END_CAP = 4599.0
-TOTAL_VIDEO_CHUNKS = 1250
+# TOTAL_VIDEO_CHUNKS = 1250
+TOTAL_VIDEO_CHUNKS = 596
 # TOTAL_VIDEO_CHUNKS = 4599
 M_IN_K = 1000.0
 # REBUF_PENALTY = 2.66  # 1 sec rebuffering -> 3 Mbps     logreward
@@ -34,7 +36,8 @@ BITRATE_LEVELS = 6
 # TEST_TRACES = '../longer_traces/'
 # TEST_TRACES = './simulation_traces/'
 # TEST_TRACES = '../cooked_test_traces/'
-VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
+# VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
+VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_vmaf_1s/vmaf_'
 
 TEST_TRACES = sys.argv[1]
 VMAF_REBUF_PENALTY_1 = float(sys.argv[2])
@@ -82,7 +85,7 @@ def get_chunk_vmaf(quality, index):
 
 def main():
 
-    for bitrate in xrange(BITRATE_LEVELS):
+    for bitrate in range(BITRATE_LEVELS):
         video_vmaf[bitrate] = []
         with open(VIDEO_VMAF_FILE + str(bitrate)) as f:
             for line in f:
@@ -191,7 +194,7 @@ def main():
 
         # log time_stamp, bit_rate, buffer_size, reward
         # log_file.write(str(time_stamp / M_IN_K) + '\t' +
-        log_file.write(str(video_chunk_num) + '\t' +
+        str_log = (str(video_chunk_num) + '\t' +
                        # str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
                        str(video_quality) + '\t' +
                        str(buffer_size) + '\t' +
@@ -199,6 +202,8 @@ def main():
                        str(video_chunk_size) + '\t' +
                        str(delay) + '\t' +
                        str(reward) + '\n')
+        str_log = str_log.encode()
+        log_file.write(str_log)
         log_file.flush()
 
         # retrieve previous state
@@ -260,7 +265,7 @@ def main():
         # entropy_record.append(a3c.compute_entropy(action_prob[0]))
 
         if end_of_video:
-            log_file.write('\n')
+            log_file.write(('\n').encode())
             log_file.close()
 
             last_bit_rate = DEFAULT_QUALITY

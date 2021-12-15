@@ -30,7 +30,10 @@ BITRATE_LEVELS = 6
 VMAF_SMOOTH_PENALTY = 1
 VMAF_REBUF_PENALTY = 10000
 
+# COARSE_DIM = 1
 # COARSE_DIM = 2
+# COARSE_DIM = 3
+# COARSE_DIM = 4
 COARSE_DIM = 5
 VIDEO_SIZE_FILE = '../simulation_video_size/synthetic_video_size_BBB_ED/video_size_'
 
@@ -48,18 +51,21 @@ QUAITY_WEIGHT = float(sys.argv[5])
 # LOG_FILE = '../test_results/log_CoarseUCB0'
 # TEST_TRACES = '../norway_bus_times1/'
 # # TEST_TRACES = '../norway_bus_times3/'
-# alpha = 5
+# alpha = 1
+# # alpha = 5
 # # alpha = 0.01
 # VMAF_REBUF_PENALTY_1 = 100
 # QUAITY_WEIGHT = 1
 # # VMAF_REBUF_PENALTY_1 = 1
 # # QUAITY_WEIGHT = 3
+# adaptive_alpha = alpha
 
 # S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_INFO = 5  # throughput, bit_rate, buffer_size, chunk_size, penalty_sm
 # S_INFO = 5  # throughput*5, bit_rate, buffer_size, chunk_size, penalty_sm, sr_time, target_buf
 # X_INFO = 9  # throughput*5, bit_rate, buffer_size, chunk_size, penalty_sm
-X_INFO = 7 + COARSE_DIM * 2  # throughput*5, vmaf, buffer_size, chunk_size*COARSE_DIM , vmaf*COARSE_DIM
+# X_INFO = 7 + COARSE_DIM * 2  # throughput*5, vmaf, buffer_size, chunk_size*COARSE_DIM , vmaf*COARSE_DIM
+X_INFO = 9  # throughput*5, buffer_size, sum_chunk_size , sum_vmaf, sum_sm_penalty
 X_D = X_INFO
 X_LEN = 8
 Y_LEN = 8  # take how many rewards in the past
@@ -296,12 +302,16 @@ def main():
 
         y_reward[-1] = reward  # linear reward
 
-        if video_chunk_num > 0 and video_chunk_num % COARSE_DIM == 0:
+        # if video_chunk_num > 0 and video_chunk_num % COARSE_DIM == 0:
+        if video_chunk_num > 0:
             x_context = np.roll(x_context, -1, axis=1)
-            coarse_reward = 0
-            for i in range(COARSE_DIM):
-                idx = -1 - i
-                coarse_reward += y_reward[idx]
+
+            coarse_reward = reward
+            # coarse_reward = 0
+            # for i in range(COARSE_DIM):
+            #     idx = -1 - i
+            #     coarse_reward += y_reward[idx]
+
             x_context[:, -1] = max_context
             # x_context[0, -1] = state[0, -1]  # bitrate
             # # x_context[1, -1] = state[1, -1]  # buffer
@@ -331,50 +341,75 @@ def main():
 
         # print (video_chunk_num)
 
-        if video_chunk_num % COARSE_DIM == 0:
+        # if video_chunk_num % COARSE_DIM == 0:
+        if video_chunk_num >= 0:
             future_contexts = []
+
+            # # adaptive alpha according to the number of rounds
+            # if video_chunk_num < 100:
+            #     adaptive_alpha = 5
+            # # elif video_chunk_num < 500:
+            # #     adaptive_alpha = 1
+            # else:
+            #     adaptive_alpha = 1
+            #     # adaptive_alpha = 0.1
+
+            # # adaptive alpha according to the buffer level
+            # if buffer_size < 10:
+            #     adaptive_alpha = 0.1
+            # elif buffer_size < 30:
+            #     adaptive_alpha = 1
+            # else:
+            #     adaptive_alpha = 5
+
+            #
+            # if video_chunk_num / COARSE_DIM >= 10:  # adaptive_alpha = 1 for the first 10 decisions
+            #     if buffer_size < 10:
+            #         adaptive_alpha = 0.1
+            #     elif buffer_size < 30:
+            #         adaptive_alpha = 1
+            #     else:
+            #         adaptive_alpha = 5
+            # else:
+            #     adaptive_alpha = 1
+
+
+
             # the context of different actions for the next video chunk:
             for i in range(0, A_DIM):
                 # bitrate_i = VIDEO_BIT_RATE[i] / float(np.max(VIDEO_BIT_RATE))    # normalized to 0-1
                 # bitrate_i = VIDEO_BIT_RATE[i] / M_IN_K  # /1000
                 video_quality_last_chunk = QUAITY_WEIGHT * vmaf_last_chunk / 100
-                video_vmaf_1 = get_chunk_vmaf(i, video_chunk_num + 1)
-                video_quality_1 = QUAITY_WEIGHT * video_vmaf_1 / 100  # vmaf1
-                video_vmaf_2 = get_chunk_vmaf(i, video_chunk_num + 2)
-                video_quality_2 = QUAITY_WEIGHT * video_vmaf_2 / 100  # vmaf1
-                video_vmaf_3 = get_chunk_vmaf(i, video_chunk_num + 3)
-                video_quality_3 = QUAITY_WEIGHT * video_vmaf_3 / 100  # vmaf1
-                video_vmaf_4 = get_chunk_vmaf(i, video_chunk_num + 4)
-                video_quality_4 = QUAITY_WEIGHT * video_vmaf_4 / 100  # vmaf1
-                video_vmaf_5 = get_chunk_vmaf(i, video_chunk_num + 5)
-                video_quality_5 = QUAITY_WEIGHT * video_vmaf_5 / 100  # vmaf1
                 start_buffer = buffer_size / BUFFER_NORM_FACTOR  # 10 sec
                 throughput_1 = state[3, -1] * BUFFER_NORM_FACTOR
                 throughput_2 = state[3, -2] * BUFFER_NORM_FACTOR
                 throughput_3 = state[3, -3] * BUFFER_NORM_FACTOR
                 throughput_4 = state[3, -4] * BUFFER_NORM_FACTOR
                 throughput_5 = state[3, -5] * BUFFER_NORM_FACTOR
-                video_chunk_size_1 = get_chunk_size(i, video_chunk_num + 1) / M_IN_K / M_IN_K   # M byte
-                video_chunk_size_2 = get_chunk_size(i, video_chunk_num + 2) / M_IN_K / M_IN_K   # M byte
-                video_chunk_size_3 = get_chunk_size(i, video_chunk_num + 3) / M_IN_K / M_IN_K   # M byte
-                video_chunk_size_4 = get_chunk_size(i, video_chunk_num + 4) / M_IN_K / M_IN_K   # M byte
-                video_chunk_size_5 = get_chunk_size(i, video_chunk_num + 5) / M_IN_K / M_IN_K   # M byte
-                # video_chunk_size_i = next_video_chunk_sizes[i] / M_IN_K / M_IN_K  # M byte
 
-                # penalty_sm_i = SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[i] - bitrate_last_chunk) / M_IN_K
-                # smoothness_dev_i = video_vmaf_i - vmaf_last_chunk
-                # smoothness_dev_i = abs(video_vmaf_i - vmaf_last_chunk)
-                # penalty_sm_i = SMOOTH_PENALTY * smoothness_dev_i / 100
-                # penalty_sm_i = SMOOTH_PENALTY * smoothness_dev_i * smoothness_dev_i / M_IN_K
+                chunk_vmaf = np.zeros(COARSE_DIM)
+                video_quality = np.zeros(COARSE_DIM)
+                future_chunk_size = np.zeros(COARSE_DIM)
+                chunk_sm_penalty = np.zeros(COARSE_DIM)
+                for j in range(COARSE_DIM):
+                    chunk_vmaf[j] = get_chunk_vmaf(i, video_chunk_num + 1 + j)
+                    video_quality[j] = QUAITY_WEIGHT * chunk_vmaf[j] / 100  # vmaf1
+                    future_chunk_size[j] = get_chunk_size(i, video_chunk_num + 1 + j) / M_IN_K / M_IN_K   # M byte
+                    if j > 0:
+                        temp_smoothness_dev = abs(chunk_vmaf[j] - chunk_vmaf[j-1])
+                    else:
+                        temp_smoothness_dev = abs(chunk_vmaf[j] - vmaf_last_chunk)
+                    chunk_sm_penalty[j] = SMOOTH_PENALTY * temp_smoothness_dev / 100
 
-                # cx_i = np.array(
-                #     [video_quality_last_chunk, start_buffer, throughput_1, throughput_2, throughput_3,
-                #      throughput_4, throughput_5, video_quality_1, video_quality_2, video_chunk_size_1, video_chunk_size_2])
+                sum_video_quality = np.sum(video_quality)
+                sum_future_chunk_size = np.sum(future_chunk_size)
+                sum_sm_penalty = np.sum(chunk_sm_penalty)
 
                 cx_i = np.array(
-                    [video_quality_last_chunk, start_buffer, throughput_1, throughput_2, throughput_3, throughput_4,
-                     throughput_5, video_quality_1, video_quality_2, video_quality_3, video_quality_4, video_quality_5,
-                     video_chunk_size_1, video_chunk_size_2, video_chunk_size_3, video_chunk_size_4, video_chunk_size_5])
+                    [start_buffer, throughput_1, throughput_2, throughput_3, throughput_4, throughput_5,
+                     sum_video_quality, sum_future_chunk_size, sum_sm_penalty])
+
+
 
                 future_contexts.append(cx_i)
 
@@ -384,6 +419,8 @@ def main():
                 index = i
                 UCB_i = np.matmul(np.transpose(theta[index]), x) + alpha * np.sqrt(
                     np.matmul(x_t, Aa_inv[index].dot(x)))
+                # UCB_i = np.matmul(np.transpose(theta[index]), x) + adaptive_alpha * np.sqrt(
+                #     np.matmul(x_t, Aa_inv[index].dot(x)))
                 UCB_A.append(UCB_i)
 
             max_A = np.argmax(UCB_A)
@@ -435,6 +472,7 @@ def main():
             Aa_inv = np.zeros((A_DIM, X_D, X_D))
             ba = np.zeros((A_DIM, X_D, 1))
             theta = np.zeros((A_DIM, X_D, 1))
+            # adaptive_alpha = alpha
 
             for i in range(A_DIM):
                 Aa[i] = np.identity(X_D)

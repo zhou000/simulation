@@ -52,26 +52,26 @@ os.system('mkdir ' + TEST_LOG_FOLDER)
 #     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
 #     print (cmd)
 #     os.system(cmd)
+
+
+
 #
-#
-#
-#
-# # for the LinUCB with 9d context, i.e., ctx9_LinUCB0-5
-# LOG_FILE = '../test_results/log_ctx9_LinUCB'
-# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
-# alpha = [5, 1, 0.1, 0.01, 0.001]
-# # alpha = [5, 1, 0.1, 0.01]
-# # alpha = [5]
-# # alpha = 0.0001
-# alg = './ctx9_LinUCB.py '
-#
-# for i in range(len(alpha)):
-#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-#     print (cmd)
-#     os.system(cmd)
-#
-#
-#
+# for the LinUCB with 9d context, i.e., ctx9_LinUCB0-5
+LOG_FILE = '../test_results/log_ctx9_LinUCB'
+# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+alpha = [5, 1, 0.1, 0.01, 0.001]
+# alpha = [5, 1, 0.1, 0.01]
+# alpha = [5]
+# alpha = 0.0001
+alg = './ctx9_LinUCB.py '
+
+for i in range(len(alpha)):
+    cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+    print (cmd)
+    os.system(cmd)
+
+
+
 #
 # # for the LinUCB with 7d context, i.e., ctx7_LinUCB0-5
 # LOG_FILE = '../test_results/log_ctx7_LinUCB'
@@ -170,11 +170,11 @@ os.system('mkdir ' + TEST_LOG_FOLDER)
 # print ('running_time for MPC0: ', running_time)
 #
 #
-# # # BB_server
-# # # LOG_FILE = '../test_results/log_BB_server'
-# # alg = './BufferBasedServer.py '
-# # cmd_BB_server = "python " + alg + TEST_TRACES + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-# # os.system(cmd_BB_server)
+# # BB_server
+# # LOG_FILE = '../test_results/log_BB_server'
+# alg = './BufferBasedServer.py '
+# cmd_BB_server = "python " + alg + TEST_TRACES + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+# os.system(cmd_BB_server)
 #
 #
 # # RB_server
@@ -203,16 +203,91 @@ os.system('mkdir ' + TEST_LOG_FOLDER)
 #     os.system(cmd)
 
 
-# CoarseUCB
-LOG_FILE = '../test_results/log_CoarseUCB'
-# alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
-alpha = [5, 1, 0.1, 0.01, 0.001]
-alg = './CoarseUCB.py '
+# # CoarseUCB
+# LOG_FILE = '../test_results/log_CoarseUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# alg = './CoarseUCB.py '
+#
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
 
-for i in range(len(alpha)):
-    cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
-    print (cmd)
-    os.system(cmd)
+# # SimCoarseUCB
+# LOG_FILE = '../test_results/log_SimCoarseUCB'
+# alg = './SimCoarseUCB.py '
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# # alpha = [5, 1, 0.1, 0.01, 0.001]
+# alpha = [1]
+# # alpha = 1
+# # cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(0) + ' ' + str(alpha) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+# # print (cmd)
+# # os.system(cmd)
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
+# # # alpha = 1
+# # # COARSE_DIM = [4, 5, 6, 7, 8, 9, 10]
+# # # alg = './SimCoarseUCB.py '
+# # # for i in range(len(COARSE_DIM)):
+# # #     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT) + ' ' + str(COARSE_DIM[i])
+# # #     print (cmd)
+# # #     os.system(cmd)
+
+
+# # NeuralUCB
+# LOG_FILE = '../test_results/log_NeuralUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# # alpha = [5, 1, 0.1, 0.01, 0.001]
+# alpha = [1, 0.1, 0.01, 0.001, 0.0001, 0]
+# alg = './NeuralUCB.py '
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
+
+
+
+# # NeuralCoarseUCB
+# LOG_FILE = '../test_results/log_NeuralCoarseUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# # alpha = [5, 1, 0.1, 0.01, 0.001]
+# # alpha = [0.001, 0.0001]
+# alg = './NeuralCoarseUCB.py '
+# for i in range(10):
+#     if i < 5:
+#         alpha = 0.0001
+#     else:
+#         alpha = 0.001
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
+
+
+# # SimPCoarseUCB
+# LOG_FILE = '../test_results/log_SimPCoarseUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# alg = './SimPCoarseUCB.py '
+#
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
+
+
+# # CaredCoarseUCB
+# LOG_FILE = '../test_results/log_CaredCoarseUCB'
+# # alpha = [5, 1, 0.1, 0.01, 0.001, 0.0001]
+# alpha = [5, 1, 0.1, 0.01, 0.001]
+# alg = './CaredCoarseUCB.py '
+#
+# for i in range(len(alpha)):
+#     cmd = "python " + alg + TEST_TRACES + ' ' + LOG_FILE + str(i) + ' ' + str(alpha[i]) + ' ' + str(VMAF_REBUF_PENALTY_1) + ' ' + str(QUAITY_WEIGHT)
+#     print (cmd)
+#     os.system(cmd)
 
 
 # # for the BB9_LinUCB with 9d context, i.e., BB9_LinUCB0-5

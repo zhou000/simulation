@@ -9,9 +9,9 @@ VIDEO_CHUNCK_LEN = 1000.0  # millisec, every time add this amount to buffer, for
 M_IN_K = 1000.0
 BITRATE_LEVELS = 6
 # TOTAL_VIDEO_CHUNCK = 48
-# TOTAL_VIDEO_CHUNCK = 596
 # TOTAL_VIDEO_CHUNCK = 653
-TOTAL_VIDEO_CHUNCK = 1250  # 1251 chunks
+# TOTAL_VIDEO_CHUNCK = 1250  # 1251 chunks
+TOTAL_VIDEO_CHUNCK = 596    # 597chunks
 # TOTAL_VIDEO_CHUNCK = 4599   # 4600 chunks
 BUFFER_THRESH = 60.0 * MILLISECONDS_IN_SECOND  # millisec, max buffer limit
 DRAIN_BUFFER_SLEEP_TIME = 500.0  # millisec
@@ -22,7 +22,8 @@ PACKET_SIZE = 1500  # bytes
 # VIDEO_SIZE_FILE = './long_video_size_'
 # VIDEO_SIZE_FILE = './simulation_video_size/chunksize_BBB_whole_1s/video_size_'
 # VIDEO_SIZE_FILE = './simulation_video_size/chunksize_ED_whole_1s/video_size_'
-VIDEO_SIZE_FILE = '../simulation_video_size/synthetic_video_size_BBB_ED/video_size_'
+# VIDEO_SIZE_FILE = '../simulation_video_size/synthetic_video_size_BBB_ED/video_size_'
+VIDEO_SIZE_FILE = '../simulation_video_size/chunksize_BBB_whole_1s/video_size_'
 
 
 # VIDEO_SIZE_FILE = '../simulation_video_size/4600chunks/video_size_'
@@ -52,7 +53,8 @@ class Environment:
         self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
 
         self.video_size = {}  # in bytes
-        for bitrate in xrange(BITRATE_LEVELS):
+        # for bitrate in xrange(BITRATE_LEVELS):
+        for bitrate in range(BITRATE_LEVELS):
             self.video_size[bitrate] = []
             # print (VIDEO_SIZE_FILE + str(bitrate))
             with open(VIDEO_SIZE_FILE + str(bitrate)) as f:
@@ -71,7 +73,8 @@ class Environment:
         video_chunk_size = self.video_size[quality][self.video_chunk_counter]  # in byte
 
         video_chunk_sizes = []
-        for i in xrange(BITRATE_LEVELS):
+        # for i in xrange(BITRATE_LEVELS):
+        for i in range(BITRATE_LEVELS):
             video_chunk_sizes.append(self.video_size[i][self.video_chunk_counter])
 
         if len(video_chunk_sizes) < BITRATE_LEVELS:
@@ -185,7 +188,8 @@ class Environment:
         if video_chunk_remain <= 0:
             next_video_chunk_sizes = []
         else:
-            for i in xrange(BITRATE_LEVELS):
+            # for i in xrange(BITRATE_LEVELS):
+            for i in range(BITRATE_LEVELS):
                 next_video_chunk_sizes.append(self.video_size[i][self.video_chunk_counter])
 
         # if next_video_chunk_sizes is empty
@@ -197,7 +201,8 @@ class Environment:
         if video_chunk_remain - 1 <= 0:
             next_2_video_chunk_sizes = []
         else:
-            for i in xrange(BITRATE_LEVELS):
+            # for i in xrange(BITRATE_LEVELS):
+            for i in range(BITRATE_LEVELS):
                 next_2_video_chunk_sizes.append(self.video_size[i][self.video_chunk_counter + 1])
 
         if len(next_2_video_chunk_sizes) < BITRATE_LEVELS:
@@ -208,7 +213,8 @@ class Environment:
         if video_chunk_remain - 2 <= 0:
             next_3_video_chunk_sizes = []
         else:
-            for i in xrange(BITRATE_LEVELS):
+            # for i in xrange(BITRATE_LEVELS):
+            for i in range(BITRATE_LEVELS):
                 next_3_video_chunk_sizes.append(self.video_size[i][self.video_chunk_counter + 2])
 
         if len(next_3_video_chunk_sizes) < BITRATE_LEVELS:
@@ -219,7 +225,8 @@ class Environment:
         if video_chunk_remain - 3 <= 0:
             next_4_video_chunk_sizes = []
         else:
-            for i in xrange(BITRATE_LEVELS):
+            # for i in xrange(BITRATE_LEVELS):
+            for i in range(BITRATE_LEVELS):
                 next_4_video_chunk_sizes.append(self.video_size[i][self.video_chunk_counter + 3])
 
         if len(next_4_video_chunk_sizes) < BITRATE_LEVELS:
@@ -230,7 +237,8 @@ class Environment:
         if video_chunk_remain - 4 <= 0:
             next_5_video_chunk_sizes = []
         else:
-            for i in xrange(BITRATE_LEVELS):
+            # for i in xrange(BITRATE_LEVELS):
+            for i in range(BITRATE_LEVELS):
                 next_5_video_chunk_sizes.append(self.video_size[i][self.video_chunk_counter + 4])
 
         if len(next_5_video_chunk_sizes) < BITRATE_LEVELS:
@@ -253,6 +261,7 @@ class Environment:
                                    int(np.average(next_3_video_chunk_sizes)), int(np.average(next_4_video_chunk_sizes)),
                                    int(np.average(next_5_video_chunk_sizes))])
 
+        # delay in ms
         return delay, \
                sleep_time, \
                return_buffer_size / MILLISECONDS_IN_SECOND, \

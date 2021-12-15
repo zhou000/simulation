@@ -23,27 +23,28 @@ BITS_IN_BYTE = 8.0
 # TEST_TRACES = '../longer_traces/'
 # TEST_TRACES = './simulation_traces/'
 # TEST_TRACES = '../cooked_test_traces/'
-TOTAL_VIDEO_CHUNKS = 1250
+# TOTAL_VIDEO_CHUNKS = 1250
+TOTAL_VIDEO_CHUNKS = 596
 BITRATE_LEVELS = 6
 VMAF_SMOOTH_PENALTY = 1
 VMAF_REBUF_PENALTY = 10000
 # VMAF_REBUF_PENALTY_1 = 100
-
-
-VIDEO_VMAF_FILE = '../../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
-TEST_TRACES = sys.argv[1]
-LOG_FILE = sys.argv[2]
-VMAF_REBUF_PENALTY_1 = float(sys.argv[3])
-QUAITY_WEIGHT = float(sys.argv[4])
-
-
-
-# # debug:
 # VIDEO_VMAF_FILE = '../../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
-# LOG_FILE = '../../test_results/log_ctx13_KernelUCB0'
-# TEST_TRACES = '../../norway_bus_times1/'
-# VMAF_REBUF_PENALTY_1 = 100
-# QUAITY_WEIGHT = 1
+VIDEO_VMAF_FILE = '../../simulation_vmaf/BBB_vmaf_1s/vmaf_'
+
+
+# TEST_TRACES = sys.argv[1]
+# LOG_FILE = sys.argv[2]
+# VMAF_REBUF_PENALTY_1 = float(sys.argv[3])
+# QUAITY_WEIGHT = float(sys.argv[4])
+
+
+
+# debug:
+LOG_FILE = '../../test_results/log_ctx13_KernelUCB0'
+TEST_TRACES = '../../norway_bus_times1/'
+VMAF_REBUF_PENALTY_1 = 100
+QUAITY_WEIGHT = 1
 
 # # alpha = 5
 # print (os.getcwd())
@@ -79,7 +80,7 @@ def get_chunk_vmaf(quality, index):
 
 def main():
 
-    for bitrate in xrange(BITRATE_LEVELS):
+    for bitrate in range(BITRATE_LEVELS):
         video_vmaf[bitrate] = []
         with open(VIDEO_VMAF_FILE + str(bitrate)) as f:
             for line in f:
@@ -192,7 +193,7 @@ def main():
 
         # log time_stamp, bit_rate, buffer_size, reward
         # log_file.write(str(time_stamp / M_IN_K) + '\t' +
-        log_file.write(str(video_chunk_num) + '\t' +
+        str_log = (str(video_chunk_num) + '\t' +
                        # str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
                        str(video_quality) + '\t' +
                        str(buffer_size) + '\t' +
@@ -205,6 +206,8 @@ def main():
                        # str(reward) + '\n')
                        str(reward) + '\t' +
                        str(bit_rate) + '\n')
+        str_log = str_log.encode()
+        log_file.write(str_log)
         log_file.flush()
 
         # retrieve previous state
@@ -334,7 +337,7 @@ def main():
 
 
         if end_of_video:
-            log_file.write('\n')
+            log_file.write(('\n').encode())
             log_file.close()
 
             last_bit_rate = DEFAULT_QUALITY

@@ -3,7 +3,7 @@ import sys
 
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 import load_trace
 import sim_fixed_env as env
 import copy
@@ -45,10 +45,12 @@ CARE_COUNT = 1
 
 # debug:
 VIDEO_VMAF_FILE = '../simulation_vmaf/BBB_ED_vmaf_1s/vmaf_'
-LOG_FILE = '../test_results/log_CoarseUCB0'
+LOG_FILE = '../test_results/log_CaredCoarseUCB0'
+# TEST_TRACES = '../norway_bus_5/'
 TEST_TRACES = '../norway_bus_times1/'
 # TEST_TRACES = '../norway_bus_times3/'
-alpha = 5
+alpha = 1
+# alpha = 5
 # alpha = 0.01
 VMAF_REBUF_PENALTY_1 = 100
 QUAITY_WEIGHT = 1
@@ -83,7 +85,7 @@ def get_chunk_size(quality, index):
 
 def main():
 
-    for bitrate in xrange(BITRATE_LEVELS):
+    for bitrate in range(BITRATE_LEVELS):
         video_vmaf[bitrate] = []
         with open(VIDEO_VMAF_FILE + str(bitrate)) as f:
             for line in f:
@@ -124,6 +126,7 @@ def main():
         theta[i] = np.zeros((X_D, 1))
         # buffer_level = [0, 2, 4, 6, 8, 10] * COARSE_DIM
         buffer_level = [0, 1, 2, 3, 4, 5] * COARSE_DIM
+        # buffer_level = [0, 2, 3, 4, 5, 6] * COARSE_DIM
 
     time_stamp = 0
 
@@ -245,7 +248,7 @@ def main():
 
         # log time_stamp, bit_rate, buffer_size, reward
         # log_file.write(str(time_stamp / M_IN_K) + '\t' +
-        log_file.write(str(video_chunk_num) + '\t' +
+        str_log = (str(video_chunk_num) + '\t' +
                        # str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
                        str(video_quality) + '\t' +
                        str(buffer_size) + '\t' +
@@ -258,6 +261,21 @@ def main():
                        # str(reward) + '\n')
                        str(reward) + '\t' + '\t' + '\t' + '\t' +
                        str(bit_rate) + '\n')
+        str_log = str_log.encode()
+        log_file.write(str_log)
+        # log_file.write(str(video_chunk_num) + '\t' +
+        #                # str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
+        #                str(video_quality) + '\t' +
+        #                str(buffer_size) + '\t' +
+        #                str(rebuf) + '\t' +
+        #                str(video_chunk_size) + '\t' +
+        #                str(delay) + '\t' +
+        #                # str(last_quality) + '\t' +
+        #                # str(buffer_remain_ratio) + '\t' +
+        #                # str(rush_flag) + '\t' +
+        #                # str(reward) + '\n')
+        #                str(reward) + '\t' + '\t' + '\t' + '\t' +
+        #                str(bit_rate) + '\n')
         log_file.flush()
 
 
@@ -374,6 +392,11 @@ def main():
                 #     [video_quality_last_chunk, start_buffer, throughput_1, throughput_2, throughput_3,
                 #      throughput_4, throughput_5, video_quality_1, video_quality_2, video_chunk_size_1, video_chunk_size_2])
 
+                # cx_i = np.array(
+                #     [video_quality_last_chunk, start_buffer, throughput_1, throughput_2, throughput_3, throughput_4,
+                #      throughput_5, video_quality_1, video_quality_2, video_quality_3, video_chunk_size_1,
+                #      video_chunk_size_2, video_chunk_size_3])
+
                 cx_i = np.array(
                     [video_quality_last_chunk, start_buffer, throughput_1, throughput_2, throughput_3, throughput_4,
                      throughput_5, video_quality_1, video_quality_2, video_quality_3, video_quality_4, video_quality_5,
@@ -409,7 +432,7 @@ def main():
         # entropy_record.append(a3c.compute_entropy(action_prob[0]))
 
         if end_of_video:
-            log_file.write('\n')
+            log_file.write(('\n').encode())
             log_file.close()
 
             last_bit_rate = DEFAULT_QUALITY
